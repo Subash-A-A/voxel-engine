@@ -1,0 +1,25 @@
+.ui-main {
+}
+
+.ui-transform-menu {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  z-index: 1;
+
+  .selected {
+    background-color: black;
+    color: white;
+  }
+  .not-selected:hover {
+    background-color: rgb(95, 95, 95);
+    color: white;
+  }
+
+  button {
+    cursor: pointer;
+    padding: 0.25rem;
+    border: 1px solid transparent;
+  }
+}

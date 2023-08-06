@@ -7,7 +7,7 @@ const Engine = () => {
     <section>
       <Canvas dpr={[1, 2]} camera={{ position: [5, 4, 5] }}>
         <Gizmos />
-        <Workspace />
+        <Workspace voxelColor={"#00ffff"} />
       </Canvas>
     </section>
   );

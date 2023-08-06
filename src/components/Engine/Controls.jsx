@@ -1,20 +1,23 @@
-import { OrbitControls } from "@react-three/drei";
+import { Html, OrbitControls } from "@react-three/drei";
 import { TransformControls } from "@react-three/drei";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
-const Controls = ({ selectedBlock }) => {
+const Controls = ({ selectedBlock, blockSetter }) => {
   const transformModes = ["translate", "rotate", "scale"];
   const [mode, setMode] = useState(transformModes[0]);
 
   window.addEventListener("keydown", (e) => {
     switch (e.key) {
       case "q":
-        setMode(transformModes[0]);
+        blockSetter(null);
         break;
       case "w":
-        setMode(transformModes[1]);
+        setMode(transformModes[0]);
         break;
       case "e":
+        setMode(transformModes[1]);
+        break;
+      case "r":
         setMode(transformModes[2]);
         break;
     }
@@ -24,9 +27,9 @@ const Controls = ({ selectedBlock }) => {
     <>
       {selectedBlock && (
         <TransformControls
-          translationSnap={0.25}
-          scaleSnap={0.25}
-          rotationSnap={Math.PI / 8}
+          translationSnap={1}
+          scaleSnap={1}
+          rotationSnap={Math.PI / 4}
           object={selectedBlock}
           mode={mode}
           size={0.5}
