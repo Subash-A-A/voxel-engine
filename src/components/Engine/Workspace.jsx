@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useEffect } from "react";
 import Controls from "./Controls";
 import { useThree } from "@react-three/fiber";
 import * as THREE from "three";
-import { BlockContext } from "../context/BlockContext";
 
 const Workspace = ({ voxelColor }) => {
   let isShiftDown = false;
@@ -11,7 +10,14 @@ const Workspace = ({ voxelColor }) => {
   const { raycaster, pointer, camera, scene } = useThree();
   const geometry = new THREE.BoxGeometry();
   const material = new THREE.MeshMatcapMaterial({ color: voxelColor });
+  const ghostMaterial = new THREE.MeshMatcapMaterial({
+    color: voxelColor,
+    transparent: true,
+    depthWrite: false,
+  });
 
+  const ghostVoxel = new THREE.Mesh(geometry, ghostMaterial);
+  scene.add(ghostVoxel);
   // Place a starter cube at origin
   useEffect(() => {
     const starterVoxel = new THREE.Mesh(geometry, material);
@@ -19,6 +25,21 @@ const Workspace = ({ voxelColor }) => {
     objects.push(starterVoxel);
   }, []);
 
+  const showGhostVoxel = () => {
+    ghostVoxel.material.opacity = 0;
+    if (!isShiftDown) {
+      raycaster.setFromCamera(pointer, camera);
+      const intersects = raycaster.intersectObjects(objects, false);
+      if (intersects.length > 0) {
+        const intersect = intersects[0];
+        const normal = intersect.face.normal.divideScalar(2);
+        ghostVoxel.material.opacity = 0.2;
+        ghostVoxel.position.copy(intersect.point);
+        ghostVoxel.position.add(normal);
+        ghostVoxel.position.round();
+      }
+    }
+  };
   // Create a new Mesh and making it raycast detectable (push to objects array)
   const placeVoxel = () => {
     raycaster.setFromCamera(pointer, camera);
@@ -34,7 +55,6 @@ const Workspace = ({ voxelColor }) => {
       scene.add(voxel);
     }
   };
-
   // Remove the object from the scene and make it raycast un-detectable (remove from objects array)
   const destroyVoxel = () => {
     raycaster.setFromCamera(pointer, camera);
@@ -67,6 +87,9 @@ const Workspace = ({ voxelColor }) => {
         isShiftDown = false;
         break;
     }
+  });
+  window.addEventListener("mousemove", () => {
+    showGhostVoxel();
   });
 
   return (
